@@ -12,6 +12,11 @@ using Microsoft.Extensions.Hosting;
 using Backend.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
+using System.Diagnostics;
 
 namespace Backend
 {
@@ -40,7 +45,44 @@ namespace Backend
             });
             services.AddAuthentication(
                 CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie();
+                .AddCookie()
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Tokens:ValidIssuer"],
+                        ValidAudience = Configuration["Tokens:ValidAudience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:IssuerSigningKey"])),
+                        RequireExpirationTime = true,
+                    };
+                    options.Events = new JwtBearerEvents()
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            context.NoResult();
+
+                            context.Response.StatusCode = 401;
+                            context.Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = context.Exception.Message;
+                            Debug.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Console.WriteLine("OnTokenValidated: " +
+                                context.SecurityToken);
+                            return Task.CompletedTask;
+                        }
+
+                    };
+                });
+            #endregion
+
+            #region 新增控制器和 API 相關功能的支援，但不會加入 views 或 pages
+            services.AddControllers();
             #endregion
 
             #region 修正 Web API 的 JSON 處理
