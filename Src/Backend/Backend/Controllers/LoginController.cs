@@ -34,21 +34,34 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(LoginRequestDTO loginRequestDTO)
         {
-            var fooUser = await context.LobUsers.Include(x => x.Department).FirstOrDefaultAsync(x => x.Account == loginRequestDTO.Account && x.Password == loginRequestDTO.Password);
-            if (fooUser == null)
+            if (ModelState.IsValid == false)
+            {
+                APIResult apiResult = APIResultFactory.Build(false, StatusCodes.Status200OK,
+                 ErrorMessageEnum.傳送過來的資料有問題);
+                return Ok(apiResult);
+            }
+            if (loginRequestDTO.Account != "admin" && loginRequestDTO.Account != "user")
             {
                 APIResult apiResult = APIResultFactory.Build(false, StatusCodes.Status400BadRequest,
-                    ErrorMessageEnum.帳號或密碼不正確);
+                 ErrorMessageEnum.帳號或密碼不正確);
                 return BadRequest(apiResult);
             }
-            else
-            {
-                string token = GenerateToken(fooUser);
-                string refreshToken = GenerateRefreshToken(fooUser);
 
-                LoginResponseDTO LoginResponseDTO = fooUser.ToLoginResponseDTO(
-                    token, refreshToken,
-                    configuration["Tokens:JwtExpireMinutes"], configuration["Tokens:JwtRefreshExpireDays"]);
+            {
+                string token = GenerateToken(loginRequestDTO);
+                string refreshToken = GenerateRefreshToken(loginRequestDTO);
+
+                LoginResponseDTO LoginResponseDTO = new LoginResponseDTO()
+                {
+                    Account = loginRequestDTO.Account,
+                    Id = 0,
+                    Name = loginRequestDTO.Account,
+                    Token = token,
+                    TokenExpireMinutes = Convert.ToInt32(configuration["Tokens:JwtExpireMinutes"]),
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpireDays = Convert.ToInt32(configuration["Tokens:JwtRefreshExpireDays"]),
+                };
+
                 APIResult apiResult = APIResultFactory.Build(true, StatusCodes.Status200OK,
                     ErrorMessageEnum.None, payload: LoginResponseDTO);
                 return Ok(apiResult);
@@ -61,48 +74,44 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> RefreshToken()
         {
-            UserID = Convert.ToInt32(User.FindFirst(JwtRegisteredClaimNames.Sid)?.Value);
-            TokenVersion = Convert.ToInt32(User.FindFirst(ClaimTypes.Version)?.Value);
-            var fooUser = await context.LobUsers.Include(x => x.Department).FirstOrDefaultAsync(x => x.Id == UserID);
-            if (fooUser == null)
-            {
-                APIResult apiResult = APIResultFactory.Build(false, StatusCodes.Status404NotFound,
-                    ErrorMessageEnum.沒有發現指定的該使用者資料);
-                return NotFound(apiResult);
-            }
-            else
-            {
-                APIResult apiResult;
-                if (fooUser.TokenVersion > TokenVersion)
-                {
-                    apiResult = APIResultFactory.Build(false, StatusCodes.Status400BadRequest,
-                     ErrorMessageEnum.使用者需要強制登出並重新登入以便進行身分驗證);
-                    return BadRequest(apiResult);
-                }
+            APIResult apiResult;
 
-                string token = GenerateToken(fooUser);
-                string refreshToken = GenerateRefreshToken(fooUser);
+            LoginRequestDTO loginRequestDTO = new LoginRequestDTO()
+            {
+                Account = User.FindFirst(JwtRegisteredClaimNames.Sid)?.Value,
+            };
+            string token = GenerateToken(loginRequestDTO);
+            string refreshToken = GenerateRefreshToken(loginRequestDTO);
 
-                LoginResponseDTO LoginResponseDTO = fooUser.ToLoginResponseDTO(
-                    token, refreshToken,
-                    configuration["Tokens:JwtExpireMinutes"], configuration["Tokens:JwtRefreshExpireDays"]);
-                apiResult = APIResultFactory.Build(true, StatusCodes.Status200OK,
-                   ErrorMessageEnum.None, payload: LoginResponseDTO);
-                return Ok(apiResult);
-            }
+            LoginResponseDTO LoginResponseDTO = new LoginResponseDTO()
+            {
+                Account = loginRequestDTO.Account,
+                Id = 0,
+                Name = loginRequestDTO.Account,
+                Token = token,
+                TokenExpireMinutes = Convert.ToInt32(configuration["Tokens:JwtExpireMinutes"]),
+                RefreshToken = refreshToken,
+                RefreshTokenExpireDays = Convert.ToInt32(configuration["Tokens:JwtRefreshExpireDays"]),
+            };
+
+            apiResult = APIResultFactory.Build(true, StatusCodes.Status200OK,
+               ErrorMessageEnum.None, payload: LoginResponseDTO);
+            return Ok(apiResult);
 
         }
 
-        public string GenerateToken(LobUser fooUser)
+        public string GenerateToken(LoginRequestDTO loginRequestDTO)
         {
-            var claims = new[]
+            var claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Sid, fooUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, fooUser.Account),
+                new Claim(JwtRegisteredClaimNames.Sid, loginRequestDTO.Account),
+                new Claim(ClaimTypes.Name, loginRequestDTO.Account),
                 new Claim(ClaimTypes.Role, "User"),
-                new Claim(ClaimTypes.Role, $"Dept{fooUser.Department.Id}"),
-                new Claim(ClaimTypes.Version, $"{fooUser.TokenVersion}"),
             };
+            if (loginRequestDTO.Account == "admin")
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
+            }
 
             var token = new JwtSecurityToken
             (
@@ -121,15 +130,14 @@ namespace Backend.Controllers
 
         }
 
-        public string GenerateRefreshToken(LobUser fooUser)
+        public string GenerateRefreshToken(LoginRequestDTO loginRequestDTO)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sid, fooUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, fooUser.Account),
+                new Claim(JwtRegisteredClaimNames.Sid, loginRequestDTO.Account),
+                new Claim(ClaimTypes.Name, loginRequestDTO.Account),
                 new Claim(ClaimTypes.Role, "User"),
                 new Claim(ClaimTypes.Role, $"RefreshToken"),
-                new Claim(ClaimTypes.Version, $"{fooUser.TokenVersion}"),
             };
 
             var token = new JwtSecurityToken
