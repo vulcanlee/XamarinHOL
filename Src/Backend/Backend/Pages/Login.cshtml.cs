@@ -17,7 +17,7 @@ namespace Backend.Pages
         public LoginModel()
         {
 #if DEBUG
-            Username = "001";
+            Username = "user";
             Password = "123";
             PasswordType = "";
 #endif
@@ -47,7 +47,7 @@ namespace Backend.Pages
             {
                 bool result = true;
                 string msg = "";
-                if(Username!= "001")
+                if(Username!= "admin" && Username!="user")
                 {
                     result = false;
                     Msg = "帳號或密碼不正確";
@@ -60,8 +60,13 @@ namespace Backend.Pages
                     #region 加入這個使用者需要用到的 宣告類型 Claim Type
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Role, "Administrator"),
+                        new Claim(ClaimTypes.Role, "User"),
+                        new Claim(ClaimTypes.Name, Username),
                     };
+                    if(Username=="admin")
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
+                    }
                     #endregion
 
                     #region 建立 宣告式身分識別
