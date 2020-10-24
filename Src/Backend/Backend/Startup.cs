@@ -46,7 +46,7 @@ namespace Backend
             services.AddAuthentication(
                 CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie()
-                .AddJwtBearer(options =>
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -79,6 +79,7 @@ namespace Backend
 
                     };
                 });
+            //JwtBearerDefaults.AuthenticationScheme
             #endregion
 
             #region 新增控制器和 API 相關功能的支援，但不會加入 views 或 pages
