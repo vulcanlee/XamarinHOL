@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Backend.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Backend
 {
@@ -29,6 +31,24 @@ namespace Backend
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+
+            #region 加入使用 Cookie 認證需要的宣告
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+            });
+            services.AddAuthentication(
+                CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie();
+            #endregion
+
+            #region 修正 Web API 的 JSON 處理
+            services.AddControllers().AddJsonOptions(config =>
+            {
+                config.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,8 +70,21 @@ namespace Backend
 
             app.UseRouting();
 
+            #region 指定要使用 Cookie & 使用者認證的中介軟體
+            app.UseCookiePolicy();
+            app.UseAuthentication();
+            #endregion
+
+            #region 指定使用授權檢查的中介軟體
+            app.UseAuthorization();
+            #endregion
+
             app.UseEndpoints(endpoints =>
             {
+                #region Adds endpoints for controller actions to the IEndpointRouteBuilder without specifying any routes.
+                endpoints.MapControllers();
+                #endregion
+
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
