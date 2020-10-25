@@ -17,7 +17,11 @@ namespace DataTransferObject.Enums
         {
             ErrorMessages = new Dictionary<ErrorMessageEnum, string>();
             ErrorMessages.Add(ErrorMessageEnum.None, "");
-            ErrorMessages.Add(ErrorMessageEnum.SecurityTokenExpiredException, "存取權杖可用期限已經逾期超過");
+            ErrorMessages.Add(ErrorMessageEnum.SecurityTokenExpiredException, "存取權杖可用期限已經逾期超過 ");
+            ErrorMessages.Add(ErrorMessageEnum.SecurityTokenReplayDetectedException, "收到已重新執行的安全性權杖 ");
+            ErrorMessages.Add(ErrorMessageEnum.SecurityTokenNotYetValidException, "接收到具有未來有效時間的安全性權杖 ");
+            ErrorMessages.Add(ErrorMessageEnum.SecurityTokenValidationException, "接收到的安全性權杖無效 ");
+            ErrorMessages.Add(ErrorMessageEnum.AuthenticationFailed, "存取權杖發生問題 ");
             ErrorMessages.Add(ErrorMessageEnum.權杖中沒有發現指定使用者ID, "權杖中沒有發現指定使用者ID");
             ErrorMessages.Add(ErrorMessageEnum.帳號或密碼不正確, "帳號或密碼不正確");
             ErrorMessages.Add(ErrorMessageEnum.沒有發現指定的該使用者資料, "沒有發現指定的該使用者資料");

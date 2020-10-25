@@ -6,7 +6,36 @@
 	},
 	"item": [
 		{
-			"name": "Login 使用者登入",
+			"name": "Login 使用者登入 User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Account\" :\"user\",\r\n    \"Password\" :\"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/Login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"Login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login 使用者登入 Admin",
 			"request": {
 				"method": "POST",
 				"header": [],

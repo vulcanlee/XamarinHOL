@@ -8,6 +8,10 @@ namespace DataTransferObject.Enums
     {
         None = 0,
         SecurityTokenExpiredException,
+        SecurityTokenReplayDetectedException,
+        SecurityTokenNotYetValidException,
+        SecurityTokenValidationException,
+        AuthenticationFailed,
         帳號或密碼不正確 = 1000,
         權杖中沒有發現指定使用者ID,
         沒有發現指定的該使用者資料,

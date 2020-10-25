@@ -17,6 +17,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using System.Diagnostics;
+using ShareBusiness.Helpers;
+using DataTransferObject.DTOs;
+using Newtonsoft.Json;
 
 namespace Backend
 {
@@ -58,17 +61,26 @@ namespace Backend
                         ValidAudience = Configuration["Tokens:ValidAudience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:IssuerSigningKey"])),
                         RequireExpirationTime = true,
+                        ClockSkew = TimeSpan.Zero,
                     };
                     options.Events = new JwtBearerEvents()
                     {
-                        OnAuthenticationFailed = context =>
+                        OnAuthenticationFailed =  async context =>
                         {
-                            context.NoResult();
+                            ////context.NoResult();
 
                             context.Response.StatusCode = 401;
                             context.Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = context.Exception.Message;
-                            Debug.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
-                            return Task.CompletedTask;
+                            APIResult apiResult = JWTTokenFailHelper.GetFailResult(context.Exception);
+
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsync(JsonConvert.SerializeObject(apiResult));
+                            return ;
+                        },
+                        OnChallenge = async context =>
+                        {
+                            context.HandleResponse();
+                            return ;
                         },
                         OnTokenValidated = context =>
                         {
