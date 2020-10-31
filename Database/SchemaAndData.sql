@@ -7,11 +7,11 @@ USE [master];
 GO
 
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'BikeStore')
-    DROP DATABASE BikeStore;
+    DROP DATABASE [BikeStore];
 GO
 
 -- Create the BikeStore database.
-CREATE DATABASE BikeStore1;
+CREATE DATABASE [BikeStore];
 GO
 
 -- Specify a simple recovery model 
