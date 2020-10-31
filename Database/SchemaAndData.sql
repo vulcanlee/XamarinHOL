@@ -11,7 +11,7 @@ IF EXISTS (SELECT * FROM sys.databases WHERE name = 'BikeStore')
 GO
 
 -- Create the BikeStore database.
-CREATE DATABASE BikeStore;
+CREATE DATABASE BikeStore1;
 GO
 
 -- Specify a simple recovery model 
@@ -23,6 +23,15 @@ GO
 USE BikeStore
 
 -- create tables
+CREATE TABLE Account (
+	AccountId INT IDENTITY (1, 1) PRIMARY KEY,
+	[Email] NVARCHAR (255) NOT NULL,
+	[Password] NVARCHAR (255) NOT NULL,
+	[Name] NVARCHAR (255) NOT NULL,
+	[Version] INT NOT NULL,
+	[Disable] bit NOT NULL,
+);
+
 CREATE TABLE Category (
 	CategoryId INT IDENTITY (1, 1) PRIMARY KEY,
 	[Name] NVARCHAR (255) NOT NULL
@@ -117,6 +126,22 @@ CREATE TABLE Stock (
 );
 
 USE BikeStore
+
+
+SET IDENTITY_INSERT Account ON; 
+
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(1,'user1','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(2,'user2','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(3,'user3','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(4,'user4','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(5,'user5','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(6,'user6','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(7,'user7','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(8,'user8','user1','pw',0,0)
+INSERT INTO Account(AccountId,[Email],[Name],[Password],[Version],[Disable]) VALUES(9,'user9','user1','pw',0,0)
+
+SET IDENTITY_INSERT Account OFF;  
+
 SET IDENTITY_INSERT Brand ON;  
 
 INSERT INTO Brand(BrandId,[Name]) VALUES(1,'Electra')
