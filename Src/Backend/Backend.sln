@@ -5,11 +5,15 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "Backend\Backend.csproj", "{9B994EFD-B5CC-4763-AEC8-7AD35D95D511}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTransferObject", "DataTransferObject\DataTransferObject.csproj", "{0F677EF5-0782-4B5F-8EDB-ECD7C376A717}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTransferObject", "DataTransferObject\DataTransferObject.csproj", "{0F677EF5-0782-4B5F-8EDB-ECD7C376A717}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBusiness", "ShareBusiness\ShareBusiness.csproj", "{0B2DD137-6171-4A60-A472-33A9B3C57682}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShareBusiness", "ShareBusiness\ShareBusiness.csproj", "{0B2DD137-6171-4A60-A472-33A9B3C57682}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareDomain", "ShareDomain\ShareDomain.csproj", "{F9D0CEB4-924C-4B2A-86CC-48563032666C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShareDomain", "ShareDomain\ShareDomain.csproj", "{F9D0CEB4-924C-4B2A-86CC-48563032666C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Empty", "Empty\Empty.csproj", "{61AEDA2B-3B05-4AF5-8855-DE26923AF434}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{E25AFC01-2A96-497F-A3E8-F46907B89341}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{F9D0CEB4-924C-4B2A-86CC-48563032666C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9D0CEB4-924C-4B2A-86CC-48563032666C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9D0CEB4-924C-4B2A-86CC-48563032666C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61AEDA2B-3B05-4AF5-8855-DE26923AF434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61AEDA2B-3B05-4AF5-8855-DE26923AF434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61AEDA2B-3B05-4AF5-8855-DE26923AF434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61AEDA2B-3B05-4AF5-8855-DE26923AF434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E25AFC01-2A96-497F-A3E8-F46907B89341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E25AFC01-2A96-497F-A3E8-F46907B89341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E25AFC01-2A96-497F-A3E8-F46907B89341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E25AFC01-2A96-497F-A3E8-F46907B89341}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -22,110 +22,109 @@ GO
 
 USE BikeStore
 
--- create tables
-CREATE TABLE Account (
-	AccountId INT IDENTITY (1, 1) PRIMARY KEY,
-	[Email] NVARCHAR (255) NOT NULL,
-	[Password] NVARCHAR (255) NOT NULL,
-	[Name] NVARCHAR (255) NOT NULL,
-	[Version] INT NOT NULL,
-	[Disable] bit NOT NULL,
-);
 
-CREATE TABLE Category (
-	CategoryId INT IDENTITY (1, 1) PRIMARY KEY,
-	[Name] NVARCHAR (255) NOT NULL
-);
-
-CREATE TABLE Brand (
-	BrandId INT IDENTITY (1, 1) PRIMARY KEY,
-	[Name] NVARCHAR (255) NOT NULL
-);
-
-CREATE TABLE Product (
-	ProductId INT IDENTITY (1, 1) PRIMARY KEY,
-	[Name] NVARCHAR (255) NOT NULL,
-	BrandId INT NOT NULL,
-	CategoryId INT NOT NULL,
-	ModelYear SMALLINT NOT NULL,
-	ListPrice DECIMAL (10, 2) NOT NULL,
-	CONSTRAINT [FK_Product_REF_Category] FOREIGN KEY (CategoryId) REFERENCES Category (CategoryId) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Product_REF_Brand] FOREIGN KEY (BrandId) REFERENCES Brand (BrandId) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Customer (
-	CustomerId INT IDENTITY (1, 1) PRIMARY KEY,
-	FirstName NVARCHAR (255) NOT NULL,
-	LastName NVARCHAR (255) NOT NULL,
-	Phone NVARCHAR (25),
-	Email NVARCHAR (255) NOT NULL,
-	Street NVARCHAR (255),
-	City NVARCHAR (50),
-	[State] NVARCHAR (25),
-	ZipCode NVARCHAR (5)
-);
-
-CREATE TABLE Store (
-	StoreId INT IDENTITY (1, 1) PRIMARY KEY,
-	[Name] NVARCHAR (255) NOT NULL,
-	Phone NVARCHAR (25),
-	Email NVARCHAR (255),
-	Street NVARCHAR (255),
-	City NVARCHAR (255),
-	[State] NVARCHAR (10),
-	ZipCode NVARCHAR (5)
-);
-
-CREATE TABLE Staff (
-	StaffId INT IDENTITY (1, 1) PRIMARY KEY,
-	FirstName NVARCHAR (50) NOT NULL,
-	LastName NVARCHAR (50) NOT NULL,
-	Email NVARCHAR (255) NOT NULL UNIQUE,
-	Phone NVARCHAR (25),
-	Active tinyint NOT NULL,
-	StoreId INT NOT NULL,
-	ManagerId INT,
-	CONSTRAINT [FK_Staff_REF_Store] FOREIGN KEY (StoreId) REFERENCES Store (StoreId) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Staff_REF_Staff] FOREIGN KEY (ManagerId) REFERENCES Staff (StaffId) ON DELETE NO ACTION ON UPDATE NO ACTION
-);
-
-CREATE TABLE [Order] (
-	OrderId INT IDENTITY (1, 1) PRIMARY KEY,
-	CustomerId INT,
-	[Status] tinyint NOT NULL,
-	-- Order status: 1 = Pending; 2 = Processing; 3 = Rejected; 4 = Completed
-	OrderDate DATE NOT NULL,
-	RequiredDate DATE NOT NULL,
-	ShippedDate DATE,
-	StoreId INT NOT NULL,
-	StaffId INT NOT NULL,
-	CONSTRAINT [FK_Order_REF_Customer] FOREIGN KEY (CustomerId) REFERENCES Customer (CustomerId) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Order_REF_Store] FOREIGN KEY (StoreId) REFERENCES Store (StoreId) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Order_REF_Staff] FOREIGN KEY (StaffId) REFERENCES Staff (StaffId) ON DELETE NO ACTION ON UPDATE NO ACTION
-);
-
-CREATE TABLE OrderItem (
-	OrderId INT,
-	OrderItemId INT,
-	ProductId INT NOT NULL,
-	Quantity INT NOT NULL,
-	ListPrice DECIMAL (10, 2) NOT NULL,
-	Discount DECIMAL (4, 2) NOT NULL DEFAULT 0,
-	CONSTRAINT [PK_OrderItem] PRIMARY KEY (OrderId, OrderItemId),
-	CONSTRAINT [FK_OrderItem_REF_Order] FOREIGN KEY (OrderId) REFERENCES [Order] (OrderId) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_OrderItem_REF_Product] FOREIGN KEY (ProductId) REFERENCES Product (ProductId) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE Stock (
-	StoreId INT,
-	ProductId INT,
-	Quantity INT,
-	CONSTRAINT [PK_Stock] PRIMARY KEY (StoreId, ProductId),
-	CONSTRAINT [FK_Stock_REF_Store] FOREIGN KEY (StoreId) REFERENCES Store (StoreId) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_Stock_REF_Product] FOREIGN KEY (ProductId) REFERENCES Product (ProductId) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-USE BikeStore
+        -- create tables
+        CREATE TABLE Account (
+        	AccountId INT IDENTITY (1, 1) PRIMARY KEY,
+        	[Email] NVARCHAR (255) NOT NULL,
+        	[Password] NVARCHAR (255) NOT NULL,
+        	[Name] NVARCHAR (255) NOT NULL,
+        	[Version] INT NOT NULL,
+        	[Disable] bit NOT NULL,
+        );
+        
+        CREATE TABLE Category (
+        	CategoryId INT IDENTITY (1, 1) PRIMARY KEY,
+        	[Name] NVARCHAR (255) NOT NULL
+        );
+        
+        CREATE TABLE Brand (
+        	BrandId INT IDENTITY (1, 1) PRIMARY KEY,
+        	[Name] NVARCHAR (255) NOT NULL
+        );
+        
+        CREATE TABLE Product (
+        	ProductId INT IDENTITY (1, 1) PRIMARY KEY,
+        	[Name] NVARCHAR (255) NOT NULL,
+        	BrandId INT NOT NULL,
+        	CategoryId INT NOT NULL,
+        	ModelYear SMALLINT NOT NULL,
+        	ListPrice DECIMAL (10, 2) NOT NULL,
+        	CONSTRAINT [FK_Product_REF_Category] FOREIGN KEY (CategoryId) REFERENCES Category (CategoryId) ON DELETE CASCADE ON UPDATE CASCADE,
+        	CONSTRAINT [FK_Product_REF_Brand] FOREIGN KEY (BrandId) REFERENCES Brand (BrandId) ON DELETE CASCADE ON UPDATE CASCADE
+        );
+        
+        CREATE TABLE Customer (
+        	CustomerId INT IDENTITY (1, 1) PRIMARY KEY,
+        	FirstName NVARCHAR (255) NOT NULL,
+        	LastName NVARCHAR (255) NOT NULL,
+        	Phone NVARCHAR (25),
+        	Email NVARCHAR (255) NOT NULL,
+        	Street NVARCHAR (255),
+        	City NVARCHAR (50),
+        	[State] NVARCHAR (25),
+        	ZipCode NVARCHAR (5)
+        );
+        
+        CREATE TABLE Store (
+        	StoreId INT IDENTITY (1, 1) PRIMARY KEY,
+        	[Name] NVARCHAR (255) NOT NULL,
+        	Phone NVARCHAR (25),
+        	Email NVARCHAR (255),
+        	Street NVARCHAR (255),
+        	City NVARCHAR (255),
+        	[State] NVARCHAR (10),
+        	ZipCode NVARCHAR (5)
+        );
+        
+        CREATE TABLE Staff (
+        	StaffId INT IDENTITY (1, 1) PRIMARY KEY,
+        	FirstName NVARCHAR (50) NOT NULL,
+        	LastName NVARCHAR (50) NOT NULL,
+        	Email NVARCHAR (255) NOT NULL UNIQUE,
+        	Phone NVARCHAR (25),
+        	Active tinyint NOT NULL,
+        	StoreId INT NOT NULL,
+        	ManagerId INT,
+        	CONSTRAINT [FK_Staff_REF_Store] FOREIGN KEY (StoreId) REFERENCES Store (StoreId) ON DELETE CASCADE ON UPDATE CASCADE,
+        	CONSTRAINT [FK_Staff_REF_Staff] FOREIGN KEY (ManagerId) REFERENCES Staff (StaffId) ON DELETE NO ACTION ON UPDATE NO ACTION
+        );
+        
+        CREATE TABLE [Order] (
+        	OrderId INT IDENTITY (1, 1) PRIMARY KEY,
+        	CustomerId INT,
+        	[Status] tinyint NOT NULL,
+        	-- Order status: 1 = Pending; 2 = Processing; 3 = Rejected; 4 = Completed
+        	OrderDate DATE NOT NULL,
+        	RequiredDate DATE NOT NULL,
+        	ShippedDate DATE,
+        	StoreId INT NOT NULL,
+        	StaffId INT NOT NULL,
+        	CONSTRAINT [FK_Order_REF_Customer] FOREIGN KEY (CustomerId) REFERENCES Customer (CustomerId) ON DELETE CASCADE ON UPDATE CASCADE,
+        	CONSTRAINT [FK_Order_REF_Store] FOREIGN KEY (StoreId) REFERENCES Store (StoreId) ON DELETE CASCADE ON UPDATE CASCADE,
+        	CONSTRAINT [FK_Order_REF_Staff] FOREIGN KEY (StaffId) REFERENCES Staff (StaffId) ON DELETE NO ACTION ON UPDATE NO ACTION
+        );
+        
+        CREATE TABLE OrderItem (
+        	OrderId INT,
+        	OrderItemId INT,
+        	ProductId INT NOT NULL,
+        	Quantity INT NOT NULL,
+        	ListPrice DECIMAL (10, 2) NOT NULL,
+        	Discount DECIMAL (4, 2) NOT NULL DEFAULT 0,
+        	CONSTRAINT [PK_OrderItem] PRIMARY KEY (OrderId, OrderItemId),
+        	CONSTRAINT [FK_OrderItem_REF_Order] FOREIGN KEY (OrderId) REFERENCES [Order] (OrderId) ON DELETE CASCADE ON UPDATE CASCADE,
+        	CONSTRAINT [FK_OrderItem_REF_Product] FOREIGN KEY (ProductId) REFERENCES Product (ProductId) ON DELETE CASCADE ON UPDATE CASCADE
+        );
+        
+        CREATE TABLE Stock (
+        	StoreId INT,
+        	ProductId INT,
+        	Quantity INT,
+        	CONSTRAINT [PK_Stock] PRIMARY KEY (StoreId, ProductId),
+        	CONSTRAINT [FK_Stock_REF_Store] FOREIGN KEY (StoreId) REFERENCES Store (StoreId) ON DELETE CASCADE ON UPDATE CASCADE,
+        	CONSTRAINT [FK_Stock_REF_Product] FOREIGN KEY (ProductId) REFERENCES Product (ProductId) ON DELETE CASCADE ON UPDATE CASCADE
+        );
 
 
 SET IDENTITY_INSERT Account ON; 
