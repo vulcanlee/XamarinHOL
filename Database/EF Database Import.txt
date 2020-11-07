@@ -1,1 +1,1 @@
-Scaffold-DbContext "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=BikeStore" Microsoft.EntityFrameworkCore.SqlServer -StartupProject Empty -Project DataAccessLayer -OutputDir Models -f
+Scaffold-DbContext "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=School" Microsoft.EntityFrameworkCore.SqlServer -StartupProject Empty -Project DataAccessLayer -OutputDir Models -f

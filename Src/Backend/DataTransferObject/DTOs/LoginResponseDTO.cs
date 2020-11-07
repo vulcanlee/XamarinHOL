@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DataTransferObject.DTOs
 {
-    public class LoginResponseDTO
+    public class LoginResponseDto
     {
         public int Id { get; set; }
         public string Account { get; set; }

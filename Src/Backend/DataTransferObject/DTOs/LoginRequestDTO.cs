@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DataTransferObject.DTOs
 {
-    public class LoginRequestDTO
+    public class LoginRequestDto
     {
         [Required]
         public string Account { get; set; }

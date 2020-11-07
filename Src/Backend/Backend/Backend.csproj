@@ -16,8 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
     <ProjectReference Include="..\DataTransferObject\DataTransferObject.csproj" />
     <ProjectReference Include="..\ShareBusiness\ShareBusiness.csproj" />
+    <ProjectReference Include="..\ShareDomain\ShareDomain.csproj" />
   </ItemGroup>
 
 </Project>

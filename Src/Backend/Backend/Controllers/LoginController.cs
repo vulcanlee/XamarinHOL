@@ -11,77 +11,52 @@ using Microsoft.AspNetCore.Mvc;
 using ShareBusiness.Factories;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Backend.Services;
+using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Backend.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class LoginController : ControllerBase
     {
         private readonly Microsoft.Extensions.Configuration.IConfiguration configuration;
-        int UserID;
-        int TokenVersion;
+        private readonly IHoluserService holuserService;
 
-        public LoginController(Microsoft.Extensions.Configuration.IConfiguration configuration)
+        public LoginController(Microsoft.Extensions.Configuration.IConfiguration configuration,
+            IHoluserService holuserService)
         {
             this.configuration = configuration;
+            this.holuserService = holuserService;
         }
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Post(LoginRequestDTO loginRequestDTO)
+        public async Task<IActionResult> Post(LoginRequestDto loginRequestDTO)
         {
+            APIResult apiResult;
+            await Task.Yield();
             if (ModelState.IsValid == false)
             {
-                APIResult apiResult = APIResultFactory.Build(false, StatusCodes.Status200OK,
-                 ErrorMessageEnum.傳送過來的資料有問題);
+                apiResult = APIResultFactory.Build(false, StatusCodes.Status200OK,
+                ErrorMessageEnum.傳送過來的資料有問題);
                 return Ok(apiResult);
             }
-            if (loginRequestDTO.Account != "admin" && loginRequestDTO.Account != "user")
+
+            (Holuser user, string message) = await holuserService.CheckUser(loginRequestDTO.Account, loginRequestDTO.Password);
+
+            if (user == null)
             {
-                APIResult apiResult = APIResultFactory.Build(false, StatusCodes.Status400BadRequest,
-                 ErrorMessageEnum.帳號或密碼不正確);
+                apiResult = APIResultFactory.Build(false, StatusCodes.Status400BadRequest,
+                ErrorMessageEnum.帳號或密碼不正確);
                 return BadRequest(apiResult);
             }
 
-            {
-                string token = GenerateToken(loginRequestDTO);
-                string refreshToken = GenerateRefreshToken(loginRequestDTO);
+            string token = GenerateToken(user);
+            string refreshToken = GenerateRefreshToken(user);
 
-                LoginResponseDTO LoginResponseDTO = new LoginResponseDTO()
-                {
-                    Account = loginRequestDTO.Account,
-                    Id = 0,
-                    Name = loginRequestDTO.Account,
-                    Token = token,
-                    TokenExpireMinutes = Convert.ToInt32(configuration["Tokens:JwtExpireMinutes"]),
-                    RefreshToken = refreshToken,
-                    RefreshTokenExpireDays = Convert.ToInt32(configuration["Tokens:JwtRefreshExpireDays"]),
-                };
-
-                APIResult apiResult = APIResultFactory.Build(true, StatusCodes.Status200OK,
-                    ErrorMessageEnum.None, payload: LoginResponseDTO);
-                return Ok(apiResult);
-            }
-
-        }
-
-        [Authorize(Roles = "RefreshToken")]
-        [Route("RefreshToken")]
-        [HttpGet]
-        public async Task<IActionResult> RefreshToken()
-        {
-            APIResult apiResult;
-
-            LoginRequestDTO loginRequestDTO = new LoginRequestDTO()
-            {
-                Account = User.FindFirst(JwtRegisteredClaimNames.Sid)?.Value,
-            };
-            string token = GenerateToken(loginRequestDTO);
-            string refreshToken = GenerateRefreshToken(loginRequestDTO);
-
-            LoginResponseDTO LoginResponseDTO = new LoginResponseDTO()
+            LoginResponseDto LoginResponseDTO = new LoginResponseDto()
             {
                 Account = loginRequestDTO.Account,
                 Id = 0,
@@ -98,15 +73,57 @@ namespace Backend.Controllers
 
         }
 
-        public string GenerateToken(LoginRequestDTO loginRequestDTO)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "RefreshToken")]
+        [Route("RefreshToken")]
+        [HttpGet]
+        public async Task<IActionResult> RefreshToken()
+        {
+            APIResult apiResult;
+            await Task.Yield();
+            LoginRequestDto loginRequestDTO = new LoginRequestDto()
+            {
+                Account = User.FindFirst(JwtRegisteredClaimNames.Sid)?.Value,
+            };
+
+            Holuser user = await holuserService.GetAsync(Convert.ToInt32(loginRequestDTO.Account));
+            if (user == null)
+            {
+                apiResult = APIResultFactory.Build(false, StatusCodes.Status401Unauthorized,
+                ErrorMessageEnum.沒有發現指定的該使用者資料);
+                return BadRequest(apiResult);
+            }
+
+            string token = GenerateToken(user);
+            string refreshToken = GenerateRefreshToken(user);
+
+            LoginResponseDto LoginResponseDTO = new LoginResponseDto()
+            {
+                Account = loginRequestDTO.Account,
+                Id = 0,
+                Name = loginRequestDTO.Account,
+                Token = token,
+                TokenExpireMinutes = Convert.ToInt32(configuration["Tokens:JwtExpireMinutes"]),
+                RefreshToken = refreshToken,
+                RefreshTokenExpireDays = Convert.ToInt32(configuration["Tokens:JwtRefreshExpireDays"]),
+            };
+
+            apiResult = APIResultFactory.Build(true, StatusCodes.Status200OK,
+               ErrorMessageEnum.None, payload: LoginResponseDTO);
+            return Ok(apiResult);
+
+        }
+
+        public string GenerateToken(Holuser user)
         {
             var claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Sid, loginRequestDTO.Account),
-                new Claim(ClaimTypes.Name, loginRequestDTO.Account),
+                new Claim(JwtRegisteredClaimNames.Sid, user.HoluserId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Account),
+                new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, "User"),
+                new Claim("TokenVersion", user.TokenVersion.ToString()),
             };
-            if (loginRequestDTO.Account == "admin")
+            if (user.Level == 4)
             {
                 claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
             }
@@ -128,13 +145,13 @@ namespace Backend.Controllers
 
         }
 
-        public string GenerateRefreshToken(LoginRequestDTO loginRequestDTO)
+        public string GenerateRefreshToken(Holuser user)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sid, loginRequestDTO.Account),
-                new Claim(ClaimTypes.Name, loginRequestDTO.Account),
-                new Claim(ClaimTypes.Role, "User"),
+                new Claim(JwtRegisteredClaimNames.Sid, user.HoluserId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Account),
+                new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, $"RefreshToken"),
             };
 
