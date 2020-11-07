@@ -1,0 +1,14 @@
+﻿@page "/Product"
+@attribute [Authorize(Roles = "User")]
+@using Backend.Components.Views
+@using ShareBusiness.Helpers
+
+<div>
+    <h1>@ShareBusiness.Helpers.MagicHelper.商品管理功能名稱</h1>
+    <ProductView PageSize="@MagicHelper.GridPageSize" />
+</div>
+
+
+
+
+

@@ -1,0 +1,205 @@
+﻿@using System.Threading
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.DropDowns
+@using DataAccessLayer.Models
+@using AutoMapper
+@using Backend.Adapters
+@using Backend.Services
+@using Backend.AdapterModels
+@using Backend.RazorModels
+@using Backend.Interfaces
+@using Backend.Components.Commons
+@using ShareDomain.DataModels
+@inject HoluserRazorModel RazorModel
+@implements IRazorPage
+@implements IDataGrid
+
+<div>
+    <div class="d-inline-block pr-2">排序條件 : </div>
+    <div class="d-inline-block">
+        <SfDropDownList TValue="int" TItem="SortCondition"
+                        Placeholder="選擇排序條件" DataSource="@RazorModel.SortConditions">
+            <DropDownListFieldSettings Value="Id" Text="Title"></DropDownListFieldSettings>
+            <DropDownListEvents TValue="int" TItem="SortCondition" ValueChange="@RazorModel.SortChanged"></DropDownListEvents>
+        </SfDropDownList>
+    </div>
+</div>
+
+<SfGrid @ref="Grid" TValue="HoluserAdapterModel"
+        AllowPaging="true"
+        Toolbar="@(new List<string>() { "新增","重新整理","Search" })">
+    <SfDataManager Adaptor="Adaptors.CustomAdaptor">
+        <HoluserAdapter CurrentSortCondition="@RazorModel.CurrentSortCondition"></HoluserAdapter>
+    </SfDataManager>
+    <GridEvents CommandClicked="RazorModel.OnCommandClicked" TValue="HoluserAdapterModel"
+                OnToolbarClick="RazorModel.ToolbarClickHandler"
+                RowSelected="RowSelectHandler" RowDeselected="RowDeselectHandler" />
+    <GridPageSettings PageSize="@PageSize" />
+    <GridColumns>
+        <GridColumn Field=@nameof(HoluserAdapterModel.Name) HeaderText="名稱"></GridColumn>
+        <GridColumn Field=@nameof(HoluserAdapterModel.Account) HeaderText="帳號"></GridColumn>
+        <GridColumn Field=@nameof(HoluserAdapterModel.TokenVersion) HeaderText="權杖版本" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(HoluserAdapterModel.Level) HeaderText="等級" Width="70"></GridColumn>
+        <GridColumn HeaderText="命令" Width="150" TextAlign="@TextAlign.Center">
+            <GridCommandColumns>
+                <GridCommandColumn ButtonOption="@(new CommandButtonOptions() { Content = "修改", CssClass = "e-flat" })"></GridCommandColumn>
+                <GridCommandColumn ButtonOption="@(new CommandButtonOptions() { Content = "刪除", CssClass = "e-flat e-danger" })"></GridCommandColumn>
+            </GridCommandColumns>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+<SfDialog @bind-Visible="@RazorModel.IsShowEditRecord" IsModal="true"
+          Width="600px" Height="600px">
+    <DialogTemplates>
+        <Header>@RazorModel.EditRecordDialogTitle</Header>
+        <Content>
+            <EditForm Model="@RazorModel.CurrentRecord">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <InputWatcher EditContextActionChanged="@RazorModel.OnEditContestChanged" />
+
+                <div>
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label class="control-label">名稱</label>
+                            <SfTextBox @bind-Value="RazorModel.CurrentRecord.Name"></SfTextBox>
+                            <ValidationMessage For="@(() => RazorModel.CurrentRecord.Name)" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label class="control-label">帳號</label>
+                            <SfTextBox @bind-Value="RazorModel.CurrentRecord.Account"></SfTextBox>
+                            <ValidationMessage For="@(() => RazorModel.CurrentRecord.Account)" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label class="control-label">密碼</label>
+                            <SfTextBox Type="InputType.Password" @bind-Value="RazorModel.CurrentRecord.Password"></SfTextBox>
+                            <ValidationMessage For="@(() => RazorModel.CurrentRecord.Password)" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label class="control-label">權杖版本</label>
+                            <SfNumericTextBox @bind-Value="RazorModel.CurrentRecord.TokenVersion"></SfNumericTextBox>
+                            <ValidationMessage For="@(() => RazorModel.CurrentRecord.TokenVersion)" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label class="control-label">等級</label>
+                            <SfNumericTextBox @bind-Value="RazorModel.CurrentRecord.Level"></SfNumericTextBox>
+                            <ValidationMessage For="@(() => RazorModel.CurrentRecord.Level)" />
+                        </div>
+                    </div>
+
+                </div>
+            </EditForm>
+        </Content>
+        <FooterTemplate>
+            <div>
+                <button type="submit" class="btn btn-primary" @onclick="RazorModel.OnRecordEditConfirm">儲存</button>
+                <button class="btn btn-secondary" @onclick="RazorModel.OnRecordEditCancel">取消</button>
+            </div>
+        </FooterTemplate>
+    </DialogTemplates>
+    <DialogPositionData X="center" Y="center"></DialogPositionData>
+</SfDialog>
+
+<MessageBox Height="@RazorModel.MessageBox.Height" Width="@RazorModel.MessageBox.Width"
+            IsVisible="@RazorModel.MessageBox.IsVisible"
+            Title="@RazorModel.MessageBox.Title" Message="@RazorModel.MessageBox.Body"
+            Callback="x=>RazorModel.MessageBox.Hidden()" />
+
+<ConfirmBox Height="@RazorModel.ConfirmMessageBox.Height" Width="@RazorModel.ConfirmMessageBox.Width"
+            IsVisible="@RazorModel.ConfirmMessageBox.IsVisible"
+            Title="@RazorModel.ConfirmMessageBox.Title" Message="@RazorModel.ConfirmMessageBox.Body"
+            Callback="x=>RazorModel.RemoveThisRecord(x)" />
+
+<DialogBackground />
+
+@code{
+    SfGrid<HoluserAdapterModel> Grid;
+    [Parameter]
+    public int PageSize { get; set; } = 15;
+    [Parameter]
+    public EventCallback<HoluserAdapterModel> OnRecordChanged { get; set; }
+    [Parameter]
+    public EventCallback<object> OnViewRender { get; set; }
+
+    #region 生命週期事件
+    protected override void OnInitialized()
+    {
+        RazorModel.Setup(this, this);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender == true)
+        {
+            RazorModel.Setup(this, this);
+        }
+        if (OnViewRender.HasDelegate)
+        {
+            await OnViewRender.InvokeAsync(null);
+        }
+    }
+    #endregion
+
+    #region 頁面需要介面實作
+    public void NeedRefresh()
+    {
+        StateHasChanged();
+    }
+    public async Task NeedInvokeAsync(System.Action action)
+    {
+        await InvokeAsync(action);
+    }
+    public void RefreshGrid()
+    {
+        Grid?.Refresh();
+    }
+    public bool GridIsExist()
+    {
+        return Grid == null ? false : true;
+    }
+    public Task InvokeGridAsync(string actionName)
+    {
+        return Task.CompletedTask;
+    }
+    #endregion
+
+
+    #region 選取紀錄異動的事件處理
+    public async Task RowSelectHandler(RowSelectEventArgs<HoluserAdapterModel> args)
+    {
+        if (OnRecordChanged.HasDelegate)
+        {
+            await OnRecordChanged.InvokeAsync(args.Data);
+        }
+    }
+    public async Task RowDeselectHandler(RowDeselectEventArgs<HoluserAdapterModel> args)
+    {
+        if (OnRecordChanged.HasDelegate)
+        {
+            await OnRecordChanged.InvokeAsync(new HoluserAdapterModel()
+            {
+                HoluserId = -2,
+                Name = "",
+            });
+        }
+    }
+    #endregion
+}

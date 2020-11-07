@@ -22,6 +22,10 @@ using AutoMapper;
 using Backend.Helpers;
 using Backend.Services;
 using Backend.RazorModels;
+using System.Globalization;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 namespace Backend
 {
@@ -80,16 +84,16 @@ namespace Backend
                     };
                     options.Events = new JwtBearerEvents()
                     {
-                        OnAuthenticationFailed =  async context =>
-                        {
-                            context.Response.StatusCode = 401;
-                            context.Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = context.Exception.Message;
-                            APIResult apiResult = JWTTokenFailHelper.GetFailResult(context.Exception);
+                        OnAuthenticationFailed = async context =>
+                       {
+                           context.Response.StatusCode = 401;
+                           context.Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = context.Exception.Message;
+                           APIResult apiResult = JWTTokenFailHelper.GetFailResult(context.Exception);
 
-                            context.Response.ContentType = "application/json";
-                            await context.Response.WriteAsync(JsonConvert.SerializeObject(apiResult));
-                            return ;
-                        },
+                           context.Response.ContentType = "application/json";
+                           await context.Response.WriteAsync(JsonConvert.SerializeObject(apiResult));
+                           return;
+                       },
                         OnChallenge = context =>
                         {
                             //context.HandleResponse();
@@ -114,6 +118,28 @@ namespace Backend
             services.AddControllers().AddJsonOptions(config =>
             {
                 config.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
+            #endregion
+
+            #region Localization https://github.com/syncfusion/blazor-locale
+            // 各國語言代碼 https://en.wikipedia.org/wiki/Language_localisation
+            // Set the resx file folder path to access
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddSyncfusionBlazor();
+            // Register the Syncfusion locale service to customize the  SyncfusionBlazor component locale culture
+            services.AddSingleton(typeof(ISyncfusionStringLocalizer), typeof(SyncfusionLocalizer));
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                // Define the list of cultures your app will support
+                var supportedCultures = new List<CultureInfo>()
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("zh-TW"),
+                };
+                // Set the default culture
+                options.DefaultRequestCulture = new RequestCulture("zh-TW");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
             });
             #endregion
         }
@@ -145,6 +171,10 @@ namespace Backend
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("License Key");
             #endregion
 
+            #region Localization
+            app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
+            #endregion
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

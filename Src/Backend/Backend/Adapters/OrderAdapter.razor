@@ -1,0 +1,131 @@
+﻿@using Syncfusion.Blazor;
+@using Syncfusion.Blazor.Data;
+@using Newtonsoft.Json
+@using Backend.SortModels
+@using Backend.Services
+@using Backend.AdapterModels
+@using Backend.Helpers
+@using DataAccessLayer.Models
+@using ShareDomain.DataModels
+@using AutoMapper
+@inherits DataAdaptor<IOrderService>
+@inject IMapper Mapper
+
+<CascadingValue Value="@this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    [JsonIgnore]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public SortCondition CurrentSortCondition { get; set; }
+
+    /// <summary>
+    /// 透過 Service 使用 Entity Framework Core 來讀取資料庫內的紀錄出來
+    /// </summary>
+    /// <param name="dataManagerRequest"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public override async Task<object> ReadAsync(DataManagerRequest dataManagerRequest, string key = null)
+    {
+        IQueryable<Order> DataSource = await Service.GetAsync();
+
+        if (dataManagerRequest.Search != null && dataManagerRequest.Search.Count > 0)
+        {
+            var keyword = dataManagerRequest.Search[0].Key;
+            DataSource = DataSource
+                .Where(x => x.Name.Contains(keyword));
+        }
+
+        #region 進行排序動作
+        if (CurrentSortCondition != null)
+        {
+            switch (CurrentSortCondition.Id)
+            {
+                case (int)OrderSortEnum.OrderDateDescending:
+                    DataSource = DataSource.OrderByDescending(x => x.OrderDate);
+                    break;
+                case (int)OrderSortEnum.OrderDateAscending:
+                    DataSource = DataSource.OrderBy(x => x.OrderDate);
+                    break;
+                default:
+                    DataSource = DataSource.OrderBy(x => x.OrderDate);
+                    break;
+            }
+        }
+        #endregion
+
+        //if (dataManagerRequest.Sorted != null && dataManagerRequest.Sorted.Count > 0)
+        //{
+        //    // 進行排序動作
+        //    DataSource = DataOperations.PerformSorting(DataSource, dataManagerRequest.Sorted);
+        //}
+        //else
+        //{
+        //    // 進行預設排序
+        //    DataSource = DataSource.OrderBy(x => x.LastName).ThenBy(x => x.FirstName);
+        //}
+        if (dataManagerRequest.Where != null && dataManagerRequest.Where.Count > 0)
+        {
+            // 進行過濾動作
+            DataSource = DataOperations.PerformFiltering(DataSource, dataManagerRequest.Where, dataManagerRequest.Where[0].Operator);
+        }
+
+        // 取得記錄總數量，將要用於分頁元件面板使用
+        int count = DataSource.Cast<Order>().Count();
+
+        #region 進行分頁處理
+        if (dataManagerRequest.Skip != 0)
+        {
+            //分頁
+            DataSource = DataOperations.PerformSkip(DataSource, dataManagerRequest.Skip);
+        }
+        if (dataManagerRequest.Take != 0)
+        {
+            DataSource = DataOperations.PerformTake(DataSource, dataManagerRequest.Take);
+        }
+        #endregion
+
+        #region 想要做 Table Join 的查詢，也可以在這裡進行呼叫
+
+        #endregion
+
+        List<OrderAdapterModel> adaptorModelObjects =
+        Mapper.Map<List<OrderAdapterModel>>(DataSource);
+
+
+        #region 在這裡進行 轉接器 資料模型 的額外屬性初始化
+        foreach (var adaptorModelItem in adaptorModelObjects)
+        {
+            //--Order status: 1 = Pending; 2 = Processing; 3 = Rejected; 4 = Completed
+            switch (adaptorModelItem.Status)
+            {
+                case 1:
+                    adaptorModelItem.StatusName = "Pending";
+                    break;
+                case 2:
+                    adaptorModelItem.StatusName = "Processing";
+                    break;
+                case 3:
+                    adaptorModelItem.StatusName = "Rejected";
+                    break;
+                case 4:
+                    adaptorModelItem.StatusName = "Completed";
+                    break;
+                default:
+                    adaptorModelItem.StatusName = "";
+                    break;
+            }
+        }
+        #endregion
+
+        var item = dataManagerRequest.RequiresCounts
+        ? new DataResult() { Result = adaptorModelObjects, Count = count }
+        : (object)adaptorModelObjects;
+        await Task.Yield();
+        return item;
+    }
+}

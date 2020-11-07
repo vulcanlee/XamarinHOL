@@ -1,0 +1,14 @@
+﻿@page "/Order"
+@attribute [Authorize(Roles = "User")]
+@using Backend.Components.Views
+@using ShareBusiness.Helpers
+
+<div>
+    <h1>@ShareBusiness.Helpers.MagicHelper.訂單管理功能名稱</h1>
+    <OrderItemByOrderView PageSize="@MagicHelper.GridPageSize" />
+</div>
+
+
+
+
+
