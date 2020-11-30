@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xamarin.Essentials;
 
-namespace CommonLibrary.Utilities
+namespace CommonLibrary.Helpers.Utilities
 {
     public class UtilityHelper
     {
