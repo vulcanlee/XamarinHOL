@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommonLibrary.DTOs
+namespace CommonLibrary.Helpers.WebAPIs
 {
     /// <summary>
     /// 呼叫 API 回傳的制式格式

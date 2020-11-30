@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommonLibrary.DTOs
+namespace Business.DTOs
 {
     public class LoginRequestDTO
     {

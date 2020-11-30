@@ -1,5 +1,4 @@
-﻿using CommonLibrary.DTOs;
-using CommonLibrary.Helpers;
+﻿using CommonLibrary.Helpers;
 using CommonLibrary.Helpers.Storages;
 using CommonLibrary.Helpers.Utilities;
 using CommonLibrary.Helpers.WebAPIs;
@@ -13,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CommonLibrary.Services
+namespace CommonLibrary.Helpers.WebAPIs
 {
     /// <summary>
     /// 存取Http服務的Base Class
