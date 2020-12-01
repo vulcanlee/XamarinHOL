@@ -18,6 +18,15 @@
             <Button
                 Text="登入"
                 Command="{Binding LoginCommand}"/>
+
+            <Button
+                Text="切換為一般使用者"
+                Command="{Binding SwitchUserCommand}"
+                CommandParameter="user1"/>
+            <Button
+                Text="切換為管理者"
+                Command="{Binding SwitchUserCommand}"
+                CommandParameter="user9"/>
         </StackLayout>
     </Grid>
 </ContentPage>

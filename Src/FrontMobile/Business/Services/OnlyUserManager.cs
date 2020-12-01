@@ -12,28 +12,25 @@ using System.Threading.Tasks;
 
 namespace Business.Services
 {
-    public class ExceptionRecordsManager : BaseWebAPI<ExceptionRecordResponseDTO>
+    public class OnlyUserManager : BaseWebAPI<OnlyTestDto>
     {
         private readonly AppStatus appStatus;
 
-        public ExceptionRecordsManager(AppStatus appStatus)
+        public OnlyUserManager(AppStatus appStatus)
             : base()
         {
             //資料檔案名稱 = "SampleRepository.txt";
             //this.url = "/webapplication/ntuhwebadminapi/webadministration/T0/searchDoctor";
-            this.url = "/api/ExceptionRecords";
+            this.url = "/api/OnlyUser";
             this.host = LOBGlobal.APIEndPointHost;
+            isCollection = false;
             this.appStatus = appStatus;
         }
 
-
-        public async Task<APIResult> PostAsync(List<ExceptionRecordRequestDTO> exceptionRecordRequestDTO, CancellationToken ctoken = default(CancellationToken))
+        public async Task<APIResult> GetAsync()
         {
             token = appStatus.SystemStatus.Token;
             encodingType = EnctypeMethod.JSON;
-            needSave = false;
-            isCollection = true;
-            routeUrl = $"";
 
             #region 要傳遞的參數
             //Dictionary<string, string> dic = new Dictionary<string, string>();
@@ -43,31 +40,14 @@ namespace Business.Services
             //dic.Add(Global.getName(() => memberSignIn_QS.app), memberSignIn_QS.app);
             //dic.AddItem<string>(() => 查詢資料QueryString.strHospCode);
             //dic.Add("Price", SetMemberSignUpVM.Price.ToString());
-            dic.Add(LOBGlobal.JSONDataKeyName, JsonConvert.SerializeObject(exceptionRecordRequestDTO));
+            //dic.Add(LOBGlobal.JSONDataKeyName, JsonConvert.SerializeObject(loginRequestDTO));
             #endregion
 
-            var mr = await this.SendAsync(dic, HttpMethod.Post, ctoken);
+            var mr = await this.SendAsync(dic, HttpMethod.Get, CancellationToken.None);
 
             //mr.Success = false;
             //mr.Message = "測試用的錯誤訊息";
             return mr;
-        }
-
-        public override async Task ReadFromFileAsync()
-        {
-            needSave = true;
-            isCollection = true;
-            await base.ReadFromFileAsync();
-        }
-
-        /// <summary>
-        /// 將物件資料寫入到檔案中
-        /// </summary>
-        public override async Task WriteToFileAsync()
-        {
-            needSave = true;
-            isCollection = true;
-            await base.WriteToFileAsync();
         }
     }
 }

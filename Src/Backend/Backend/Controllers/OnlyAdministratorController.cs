@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataTransferObject.DTOs;
+using DataTransferObject.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShareBusiness.Factories;
 
 namespace Backend.Controllers
 {
@@ -15,9 +19,12 @@ namespace Backend.Controllers
     public class OnlyAdministratorController : ControllerBase
     {
         [HttpGet]
-        public string Get()
+        public IActionResult Get()
         {
-            return "Hello Administrator~~";
+            var apiResult = APIResultFactory.Build(true, StatusCodes.Status200OK,
+                        ErrorMessageEnum.None, payload: new OnlyTestDto() { Message = "Hello Administrator~~" });
+
+            return Ok(apiResult);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Business.DataModel;
 using Business.DTOs;
+using CommonLibrary.Helpers;
 using CommonLibrary.Helpers.WebAPIs;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Business.Services
             //資料檔案名稱 = "SampleRepository.txt";
             //this.url = "/webapplication/ntuhwebadminapi/webadministration/T0/searchDoctor";
             this.url = "/api/Login/RefreshToken";
-            this.host = "https://lobworkshop.azurewebsites.net";
+            this.host = LOBGlobal.APIEndPointHost;
             this.appStatus = appStatus;
             isCollection = false;
         }

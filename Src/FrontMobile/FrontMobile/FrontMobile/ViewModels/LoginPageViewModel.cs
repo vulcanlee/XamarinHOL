@@ -21,6 +21,7 @@ namespace FrontMobile.ViewModels
         public string Account { get; set; }
         public string Password { get; set; }
         public DelegateCommand LoginCommand { get; set; }
+        public DelegateCommand<string> SwitchUserCommand { get; set; }
 
         private readonly INavigationService navigationService;
         private readonly IPageDialogService dialogService;
@@ -61,6 +62,13 @@ namespace FrontMobile.ViewModels
                 }
 
                 await navigationService.NavigateAsync("/MDPage/NaviPage/HomePage");
+            });
+            #endregion
+
+            #region 切換使用者
+            SwitchUserCommand = new DelegateCommand<string>(x =>
+            {
+                Account = x;
             });
             #endregion
         }

@@ -5,5 +5,17 @@
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="FrontMobile.Views.HomePage"
              Title="首頁">
-  
+
+    <Grid>
+        <StackLayout>
+            <Button
+                Text="Only Administrator"
+                Command="{Binding OnlyAdministratorCommand}"/>
+            <Button
+                Text="Only User"
+                Command="{Binding OnlyUserCommand}"/>
+            <Label
+                Text="{Binding Message}"/>
+        </StackLayout>
+    </Grid>
 </ContentPage>

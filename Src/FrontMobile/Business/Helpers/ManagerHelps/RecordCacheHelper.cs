@@ -69,13 +69,13 @@ namespace Business.Helpers.ManagerHelps
             //        return false;
             //    }
             //}
-            progressDialog.Title = $"更新系統最新狀態資料中";
-            fooAPIResult = await systemEnvironmentsManager.GetAsync();
-            if (fooAPIResult.Status != true)
-            {
-                await dialogService.DisplayAlertAsync("更新系統最新狀態資料中 發生錯誤", fooAPIResult.Message, "確定");
-                return false;
-            }
+            //progressDialog.Title = $"更新系統最新狀態資料中";
+            //fooAPIResult = await systemEnvironmentsManager.GetAsync();
+            //if (fooAPIResult.Status != true)
+            //{
+            //    await dialogService.DisplayAlertAsync("更新系統最新狀態資料中 發生錯誤", fooAPIResult.Message, "確定");
+            //    return false;
+            //}
 
             return true;
         }

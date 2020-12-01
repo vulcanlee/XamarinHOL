@@ -205,6 +205,7 @@ namespace CommonLibrary.Helpers.WebAPIs
 
                         if (response.IsSuccessStatusCode == true)
                         {
+                            #region 回傳成功狀態碼
                             mr = JsonConvert.DeserializeObject<APIResult>(strResult, new JsonSerializerSettings { MetadataPropertyHandling = MetadataPropertyHandling.Ignore });
                             if (mr.Status == true)
                             {
@@ -234,6 +235,7 @@ namespace CommonLibrary.Helpers.WebAPIs
                                     }
                                 }
                             }
+                            #endregion
                         }
                         else
                         {
@@ -245,7 +247,8 @@ namespace CommonLibrary.Helpers.WebAPIs
                             else
                             {
                                 mr.Status = false;
-                                mr.Message = string.Format("Error Code:{0}, Error Message:{1}", response.StatusCode, response.Content);
+                                mr.StatusCode = (int)response.StatusCode;
+                                mr.Message = string.Format("Error Code:{0}, Error Message:{1}", response.StatusCode, response.ReasonPhrase);
                             }
                         }
                     }

@@ -44,6 +44,8 @@ namespace FrontMobile
 
         void RegisterOtherTypes(IContainerRegistry containerRegistry)
         {
+            containerRegistry.Register<OnlyAdministratorManager>();
+            containerRegistry.Register<OnlyUserManager>();
             containerRegistry.Register<SystemStatusManager>();
             containerRegistry.Register<LoginManager>();
             containerRegistry.Register<ExceptionRecordsManager>();
