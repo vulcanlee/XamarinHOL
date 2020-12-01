@@ -15,11 +15,26 @@ namespace FrontMobile.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         private readonly INavigationService navigationService;
+        private readonly IPageDialogService dialogService;
 
-        public MDPageViewModel(INavigationService navigationService)
+        public DelegateCommand LogoutCommand { get; set; }
+        public MDPageViewModel(INavigationService navigationService,
+            IPageDialogService dialogService)
         {
             this.navigationService = navigationService;
+            this.dialogService = dialogService;
 
+            #region 登出命令
+            LogoutCommand = new DelegateCommand(async () =>
+            {
+                var isLogout = await dialogService.DisplayAlertAsync("警告",
+                    "你確定要登出嗎？", "確定", "取消");
+                if(isLogout== true)
+                {
+                    await navigationService.NavigateAsync("/LoginPage");
+                }
+            });
+            #endregion
         }
 
         public void OnNavigatedFrom(INavigationParameters parameters)
