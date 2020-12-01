@@ -69,12 +69,13 @@ namespace FrontMobile.ViewModels
         {
         }
 
-        public void OnNavigatedTo(INavigationParameters parameters)
+        public async void OnNavigatedTo(INavigationParameters parameters)
         {
 #if DEBUG
             Account = "user1";
             Password = "pw";
 #endif
+            await systemStatusManager.ReadFromFileAsync();
         }
 
     }

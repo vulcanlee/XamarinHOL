@@ -205,7 +205,6 @@ namespace CommonLibrary.Helpers.WebAPIs
 
                         if (response.IsSuccessStatusCode == true)
                         {
-                            var cddmr = JsonConvert.DeserializeObject<APIResultX>(strResult, new JsonSerializerSettings { MetadataPropertyHandling = MetadataPropertyHandling.Ignore });
                             mr = JsonConvert.DeserializeObject<APIResult>(strResult, new JsonSerializerSettings { MetadataPropertyHandling = MetadataPropertyHandling.Ignore });
                             if (mr.Status == true)
                             {

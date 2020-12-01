@@ -23,8 +23,8 @@ namespace FrontMobile
         {
             InitializeComponent();
 
-            //await NavigationService.NavigateAsync("SplashPage");
-            await NavigationService.NavigateAsync("/MDPage/NaviPage/HomePage");
+            await NavigationService.NavigateAsync("SplashPage");
+            //await NavigationService.NavigateAsync("/MDPage/NaviPage/HomePage");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
