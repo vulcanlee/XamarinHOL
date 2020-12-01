@@ -28,6 +28,11 @@ namespace FrontMobile
 
             containerRegistry.RegisterForNavigation<NavigationPage>();
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
+            containerRegistry.RegisterForNavigation<SplashPage, SplashPageViewModel>();
+            containerRegistry.RegisterForNavigation<MDPage, MDPageViewModel>();
+            containerRegistry.RegisterForNavigation<NaviPage, NaviPageViewModel>();
+            containerRegistry.RegisterForNavigation<HomePage, HomePageViewModel>();
+            containerRegistry.RegisterForNavigation<LoginPage, LoginPageViewModel>();
         }
     }
 }
