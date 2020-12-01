@@ -4,5 +4,20 @@
              xmlns:prism="http://prismlibrary.com"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="FrontMobile.Views.LoginPage">
-  
+
+    <Grid
+        RowSpacing="0" ColumnSpacing="0"
+        >
+        <StackLayout
+            Spacing="0"
+            >
+            <Entry
+                Text="{Binding Account}"/>
+            <Entry
+                Text="{Binding Password}"/>
+            <Button
+                Text="登入"
+                Command="{Binding LoginCommand}"/>
+        </StackLayout>
+    </Grid>
 </ContentPage>

@@ -26,6 +26,27 @@ namespace CommonLibrary.Helpers.WebAPIs
         /// <summary>
         /// 呼叫此API所得到的其他內容
         /// </summary>
-        public object Payload { get; set; } = "";
+        public object Payload { get; set; }
+    }
+    public class APIResultX
+    {
+        /// <summary>
+        /// 此次呼叫 API 是否成功
+        /// </summary>
+        public bool Status { get; set; } = false;
+        /// <summary>
+        /// 呼叫結果代碼
+        /// </summary>
+        public int StatusCode { get; set; } = 999;
+        public int HTTPStatus { get; set; } = 200;
+        public int ErrorCode { get; set; }
+        /// <summary>
+        /// 呼叫 API 失敗的錯誤訊息
+        /// </summary>
+        public string Message { get; set; } = "";
+        /// <summary>
+        /// 呼叫此API所得到的其他內容
+        /// </summary>
+        public object Payload { get; set; }
     }
 }

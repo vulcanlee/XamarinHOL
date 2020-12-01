@@ -1,3 +1,6 @@
+using Business.DataModel;
+using Business.Helpers.ManagerHelps;
+using Business.Services;
 using FrontMobile.ViewModels;
 using FrontMobile.Views;
 using Prism;
@@ -20,7 +23,7 @@ namespace FrontMobile
         {
             InitializeComponent();
 
-            await NavigationService.NavigateAsync("NavigationPage/MainPage");
+            await NavigationService.NavigateAsync("SplashPage");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
@@ -34,6 +37,20 @@ namespace FrontMobile
             containerRegistry.RegisterForNavigation<NaviPage, NaviPageViewModel>();
             containerRegistry.RegisterForNavigation<HomePage, HomePageViewModel>();
             containerRegistry.RegisterForNavigation<LoginPage, LoginPageViewModel>();
+
+            RegisterOtherTypes(containerRegistry);
+        }
+
+        void RegisterOtherTypes(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.Register<SystemStatusManager>();
+            containerRegistry.Register<LoginManager>();
+            containerRegistry.Register<ExceptionRecordsManager>();
+            containerRegistry.Register<SystemEnvironmentsManager>();
+            containerRegistry.Register<RefreshTokenManager>();
+            containerRegistry.Register<RecordCacheHelper>();
+            containerRegistry.RegisterSingleton<AppStatus>();
+
         }
     }
 }

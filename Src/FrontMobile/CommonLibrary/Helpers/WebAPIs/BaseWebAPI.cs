@@ -24,7 +24,7 @@ namespace CommonLibrary.Helpers.WebAPIs
         /// <summary>
         /// WebAPI主機位置
         /// </summary>
-        public string host = LOBGlobal.APIHost;
+        public string host = LOBGlobal.APIEndPointHost;
 
         /// <summary>
         /// WebAPI方法網址
@@ -205,6 +205,7 @@ namespace CommonLibrary.Helpers.WebAPIs
 
                         if (response.IsSuccessStatusCode == true)
                         {
+                            var cddmr = JsonConvert.DeserializeObject<APIResultX>(strResult, new JsonSerializerSettings { MetadataPropertyHandling = MetadataPropertyHandling.Ignore });
                             mr = JsonConvert.DeserializeObject<APIResult>(strResult, new JsonSerializerSettings { MetadataPropertyHandling = MetadataPropertyHandling.Ignore });
                             if (mr.Status == true)
                             {

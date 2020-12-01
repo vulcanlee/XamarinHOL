@@ -5,6 +5,9 @@ using Android.OS;
 using Prism;
 using Prism.Ioc;
 
+#region 宣告需要用到的權限 Permissions
+[assembly: UsesPermission(Android.Manifest.Permission.AccessNetworkState)]
+#endregion
 namespace FrontMobile.Droid
 {
     [Activity(Theme = "@style/MainTheme",

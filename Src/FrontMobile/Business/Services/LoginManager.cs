@@ -19,7 +19,7 @@ namespace Business.Services
             //資料檔案名稱 = "SampleRepository.txt";
             //this.url = "/webapplication/ntuhwebadminapi/webadministration/T0/searchDoctor";
             this.url = "/api/Login";
-            this.host = "https://lobworkshop.azurewebsites.net";
+            this.host = LOBGlobal.APIEndPointHost;
             isCollection = false;
         }
 
