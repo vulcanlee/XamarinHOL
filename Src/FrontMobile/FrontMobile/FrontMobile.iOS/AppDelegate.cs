@@ -1,6 +1,7 @@
 ﻿using Foundation;
 using Prism;
 using Prism.Ioc;
+using System;
 using UIKit;
 
 
@@ -21,10 +22,29 @@ namespace FrontMobile.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            //AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            //{
+            //    var foo = 1;
+            //};
+            //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             global::Xamarin.Forms.Forms.Init();
+
+            #region 擴充套件初始化
+            #endregion
+            
             LoadApplication(new App(new iOSInitializer()));
 
             return base.FinishedLaunching(app, options);
+        }
+        private async void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            //ExceptionRecordsManager fooExceptionRecordsManager = new ExceptionRecordsManager();
+            //await fooExceptionRecordsManager.ReadFromFileAsync();
+            //ExceptionRecordResponseDTO fooObject = new ExceptionRecordResponseDTO()
+            //{
+            //    //CallStack = e.
+            //};
         }
     }
 

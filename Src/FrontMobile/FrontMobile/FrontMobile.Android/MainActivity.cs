@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using Acr.UserDialogs;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Prism;
@@ -14,8 +15,18 @@ namespace FrontMobile.Droid
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
+          
+            //AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            //{
+            //    var foo = 1;
+            //};
+            //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             base.OnCreate(savedInstanceState);
+
+            #region 擴充套件初始化
+            UserDialogs.Init(this);
+            #endregion
 
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App(new AndroidInitializer()));
