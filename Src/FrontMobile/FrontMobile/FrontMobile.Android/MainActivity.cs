@@ -69,6 +69,7 @@ namespace FrontMobile.Droid
                 appExceptionsManager.Items.Add(fooObject);
                 await appExceptionsManager.WriteToFileAsync();
             }).Wait();
+            
         }
     }
 
