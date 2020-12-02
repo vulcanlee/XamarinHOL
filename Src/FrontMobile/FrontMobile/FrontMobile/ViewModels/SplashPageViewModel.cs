@@ -7,6 +7,7 @@ using System.Linq;
 namespace FrontMobile.ViewModels
 {
     using System.ComponentModel;
+    using System.Threading.Tasks;
     using Acr.UserDialogs;
     using Business.DataModel;
     using Business.DTOs;
@@ -49,6 +50,7 @@ namespace FrontMobile.ViewModels
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
             await AppStatusHelper.ReadAndUpdateAppStatus(systemStatusManager, appStatus);
+            await Task.Delay(3000);
             if (appStatus.SystemStatus.IsLogin == false)
             {
                 // 使用者尚未成功登入，切換到登入頁面
