@@ -16,6 +16,9 @@
                 Command="{Binding OnlyUserCommand}"/>
             <Label
                 Text="{Binding Message}"/>
+            <Button
+                Text="Throw Exception"
+                Command="{Binding ThrowExceptionrCommand}"/>
         </StackLayout>
     </Grid>
 </ContentPage>

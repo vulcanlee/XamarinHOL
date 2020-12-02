@@ -107,6 +107,14 @@
     <AndroidResource Include="Resources\values\strings.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Business\Business.csproj">
+      <Project>{0b298f3a-cb2e-4871-99ea-aa50991a7cdc}</Project>
+      <Name>Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonLibrary\CommonLibrary.csproj">
+      <Project>{62fb9820-e61d-4a87-b56c-ccae94e6fa4a}</Project>
+      <Name>CommonLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FrontMobile\FrontMobile.csproj">
       <Project>{A682884C-CB44-4A89-B752-27BB634E0ABE}</Project>
       <Name>FrontMobile</Name>

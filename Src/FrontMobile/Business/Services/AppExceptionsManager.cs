@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Business.Services
 {
-    public class AppExceptionsManager : BaseWebAPI<ExceptionRecordResponseDTO>
+    public class AppExceptionsManager : BaseWebAPI<ExceptionRecordDTO>
     {
         public AppExceptionsManager()
             : base()

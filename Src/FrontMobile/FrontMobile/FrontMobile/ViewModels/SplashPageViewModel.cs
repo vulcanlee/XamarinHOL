@@ -28,11 +28,12 @@ namespace FrontMobile.ViewModels
         private readonly RecordCacheHelper recordCacheHelper;
         private readonly AppStatus appStatus;
         private readonly ExceptionRecordsManager exceptionRecordsManager;
+        private readonly AppExceptionsManager appExceptionsManager;
 
         public SplashPageViewModel(INavigationService navigationService, IPageDialogService dialogService,
             SystemStatusManager systemStatusManager, SystemEnvironmentsManager systemEnvironmentsManager,
             RecordCacheHelper recordCacheHelper, AppStatus appStatus,
-            ExceptionRecordsManager exceptionRecordsManager)
+            ExceptionRecordsManager exceptionRecordsManager, AppExceptionsManager appExceptionsManager)
         {
             this.navigationService = navigationService;
             this.dialogService = dialogService;
@@ -41,6 +42,7 @@ namespace FrontMobile.ViewModels
             this.recordCacheHelper = recordCacheHelper;
             this.appStatus = appStatus;
             this.exceptionRecordsManager = exceptionRecordsManager;
+            this.appExceptionsManager = appExceptionsManager;
         }
 
         public void OnNavigatedFrom(INavigationParameters parameters)
@@ -71,32 +73,15 @@ namespace FrontMobile.ViewModels
 
                 #region 上傳例外異常
                 fooIProgressDialog.Title = "請稍後，上傳例外異常";
-                await exceptionRecordsManager.ReadFromFileAsync();
-                if (exceptionRecordsManager.Items.Count > 0)
+                await appExceptionsManager.ReadFromFileAsync();
+                if (appExceptionsManager.Items.Count > 0)
                 {
-                    var fooExceptions = exceptionRecordsManager.Items;
-                    var fooExceptionRecordRequestDTOs = new List<ExceptionRecordRequestDTO>();
-
-                    foreach (var item in fooExceptions)
-                    {
-                        var fooExceptionRecordRequestDTO = new ExceptionRecordRequestDTO()
-                        {
-                            CallStack = item.CallStack,
-                            DeviceModel = item.DeviceModel,
-                            DeviceName = item.DeviceName,
-                            ExceptionTime = item.ExceptionTime,
-                            Message = item.Message,
-                            OSType = item.OSType,
-                            OSVersion = item.OSVersion,
-                            User = new UserDTO() { Id = appStatus.SystemStatus.UserID },
-                        };
-                        fooExceptionRecordRequestDTOs.Add(fooExceptionRecordRequestDTO);
-                    }
-                    var fooResult = await exceptionRecordsManager.PostAsync(fooExceptionRecordRequestDTOs);
+                    await appExceptionsManager.ReadFromFileAsync();
+                    var fooResult = await exceptionRecordsManager.PostAsync(appExceptionsManager.Items);
                     if (fooResult.Status == true)
                     {
-                        exceptionRecordsManager.Items.Clear();
-                        await exceptionRecordsManager.WriteToFileAsync();
+                        appExceptionsManager.Items.Clear();
+                        await appExceptionsManager.WriteToFileAsync();
                     }
                 }
                 #endregion

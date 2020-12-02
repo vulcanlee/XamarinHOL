@@ -19,11 +19,12 @@ namespace Business.Helpers.ManagerHelps
         private readonly AppStatus appStatus;
         private readonly RefreshTokenManager refreshTokenManager;
         private readonly ExceptionRecordsManager exceptionRecordsManager;
+        private readonly AppExceptionsManager appExceptionsManager;
 
         public LogoutCleanHelper(IPageDialogService dialogService, 
             SystemEnvironmentsManager systemEnvironmentsManager,
             SystemStatusManager systemStatusManager, AppStatus appStatus, RefreshTokenManager refreshTokenManager,
-            ExceptionRecordsManager exceptionRecordsManager)
+            ExceptionRecordsManager exceptionRecordsManager, AppExceptionsManager appExceptionsManager)
         {
             this.dialogService = dialogService;
             this.systemEnvironmentsManager = systemEnvironmentsManager;
@@ -31,6 +32,7 @@ namespace Business.Helpers.ManagerHelps
             this.appStatus = appStatus;
             this.refreshTokenManager = refreshTokenManager;
             this.exceptionRecordsManager = exceptionRecordsManager;
+            this.appExceptionsManager = appExceptionsManager;
         }
 
         public async Task<bool> LogoutCleanAsync(IProgressDialog progressDialog)
@@ -44,32 +46,25 @@ namespace Business.Helpers.ManagerHelps
             }
 
             progressDialog.Title = $"回報例外異常資料中";
-            await exceptionRecordsManager.ReadFromFileAsync();
-            if (exceptionRecordsManager.Items.Count > 0)
+
+            #region 上傳例外異常
+            await appExceptionsManager.ReadFromFileAsync();
+            if (appExceptionsManager.Items.Count > 0)
             {
-                List<ExceptionRecordRequestDTO> fooExceptionRecordRequestDTOList = new List<ExceptionRecordRequestDTO>();
-                foreach (var item in exceptionRecordsManager.Items)
+                await appExceptionsManager.ReadFromFileAsync();
+                var fooResult = await exceptionRecordsManager.PostAsync(appExceptionsManager.Items);
+                if (fooResult.Status == true)
                 {
-                    ExceptionRecordRequestDTO fooExceptionRecordRequestDTO = new ExceptionRecordRequestDTO()
-                    {
-                        CallStack = item.CallStack,
-                        DeviceModel = item.DeviceModel,
-                        DeviceName = item.DeviceName,
-                        ExceptionTime = item.ExceptionTime,
-                        Message = item.Message,
-                        OSType = item.OSType,
-                        OSVersion = item.OSVersion,
-                        User = new UserDTO() { Id = appStatus.SystemStatus.UserID },
-                    };
-                    fooExceptionRecordRequestDTOList.Add(fooExceptionRecordRequestDTO);
+                    exceptionRecordsManager.Items.Clear();
+                    await exceptionRecordsManager.WriteToFileAsync();
                 }
-                fooAPIResult = await exceptionRecordsManager.PostAsync(fooExceptionRecordRequestDTOList);
-                if (fooAPIResult.Status != true)
+                else
                 {
-                    await dialogService.DisplayAlertAsync("回報例外異常資料中 發生錯誤", fooAPIResult.Message, "確定");
+                    await dialogService.DisplayAlertAsync("回報例外異常資料中 發生錯誤", fooResult.Message, "確定");
                     return false;
                 }
             }
+            #endregion
 
             return true;
         }

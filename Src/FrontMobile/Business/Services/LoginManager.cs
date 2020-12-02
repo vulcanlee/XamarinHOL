@@ -40,8 +40,6 @@ namespace Business.Services
 
             var mr = await this.SendAsync(dic, HttpMethod.Post, CancellationToken.None);
 
-            //mr.Success = false;
-            //mr.Message = "測試用的錯誤訊息";
             return mr;
         }
     }

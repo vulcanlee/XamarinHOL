@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Business.DTOs
+namespace DataTransferObject.DTOs
 {
-    public class ExceptionRecordResponseDTO
+    public class ExceptionRecordRequestDTO
     {
         public int Id { get; set; }
+        public UserDTO User { get; set; }
         public string DeviceName { get; set; }
         public string DeviceModel { get; set; }
         public string OSType { get; set; }

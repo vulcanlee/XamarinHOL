@@ -50,6 +50,7 @@ namespace FrontMobile
             containerRegistry.Register<LoginManager>();
             containerRegistry.Register<ExceptionRecordsManager>();
             containerRegistry.Register<SystemEnvironmentsManager>();
+            containerRegistry.Register<AppExceptionsManager>();
             containerRegistry.Register<RefreshTokenManager>();
             containerRegistry.Register<RecordCacheHelper>();
             containerRegistry.RegisterSingleton<AppStatus>();

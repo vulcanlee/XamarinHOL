@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Business.Services
 {
-    public class ExceptionRecordsManager : BaseWebAPI<ExceptionRecordResponseDTO>
+    public class ExceptionRecordsManager : BaseWebAPI<ExceptionRecordDTO>
     {
         private readonly AppStatus appStatus;
 
@@ -27,7 +27,7 @@ namespace Business.Services
         }
 
 
-        public async Task<APIResult> PostAsync(List<ExceptionRecordRequestDTO> exceptionRecordRequestDTO, CancellationToken ctoken = default(CancellationToken))
+        public async Task<APIResult> PostAsync(List<ExceptionRecordDTO> exceptionRecordRequestDTO, CancellationToken ctoken = default(CancellationToken))
         {
             token = appStatus.SystemStatus.Token;
             encodingType = EnctypeMethod.JSON;
@@ -48,8 +48,6 @@ namespace Business.Services
 
             var mr = await this.SendAsync(dic, HttpMethod.Post, ctoken);
 
-            //mr.Success = false;
-            //mr.Message = "測試用的錯誤訊息";
             return mr;
         }
 
